@@ -30,6 +30,11 @@ app.get('/api/:date', (req, res) => {
     res.json({ unix: date.getTime(), utc: date.toUTCString() });
   }
 });
+app.get('/api/', (req, res) => {
+  let date = new Date();
+  res.json({ unix: date.getTime(), utc: date.toUTCString() });
+});
+
 
 // Error handling middleware for invalid date or timestamp
 app.use(function(err, req, res, next) {
