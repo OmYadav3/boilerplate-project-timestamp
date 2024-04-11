@@ -9,31 +9,6 @@ app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 2
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static("public"));
 
-// Middleware function to validate date parameter
-function validateDate(req, res, next) {
-  const { date } = req.params;
-
-  if (!date) {
-    // If date parameter is empty, use current time
-    req.parsedValue = new Date();
-    return next();
-  }
-
-  // Parse the date string
-  const parsedDate = new Date(date);
-
-  // Check if the parsed date is valid
-  if (isNaN(parsedDate.getTime())) {
-    return res.status(400).json({ error: "Invalid date format. Please provide a valid date." });
-  }
-
-  // Attach the parsed date to the request object
-  req.parsedValue = parsedDate;
-
-  // Move to the next middleware
-  next();
-}
-
 // Middleware function to validate timestamp parameter
 function validateTimestamp(req, res, next) {
   const { timestamp } = req.params;
@@ -53,6 +28,35 @@ function validateTimestamp(req, res, next) {
   next();
 }
 
+// Middleware function to validate date parameter
+function validateDate(req, res, next) {
+  const { date } = req.params;
+
+  if (!date) {
+    // If date parameter is empty, use current time
+    req.parsedValue = new Date();
+    return next();
+  }
+
+  // Parse the date string
+  const parsedDate = new Date(date);
+
+  // Check if the parsed date is valid
+  if (isNaN(parsedDate.getTime())) {
+    return res.status(400).json({ error: "Invalid date" });
+  }
+
+  // Attach the parsed date to the request object
+  req.parsedValue = parsedDate;
+
+  // Move to the next middleware
+  next();
+}
+
+// app.use(validateTimestamp);
+// app.use(validateDate);
+
+
 // Route handler for /api:date
 app.get("/api/:date", validateDate, function (req, res) {
   const { parsedValue } = req;
@@ -68,7 +72,7 @@ app.get("/api/:date", validateDate, function (req, res) {
 });
 
 // Route handler for /api:timestamp
-app.get("/api/:timestamp", validateTimestamp, function (req, res) {
+app.get("/api/:date",validateTimestamp, (req, res)  => {
   const { parsedValue } = req;
 
   // Calculate Unix timestamp
